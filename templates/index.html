@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fertilizer Recommendation</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+        input, button, select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        .result { text-align: left; margin-top: 20px; padding: 10px; background: #e9ecef; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Fertilizer Recommendation</h2>
+    <select id="envType">
+        <option value="open">Open Environment (Auto-fetch Weather)</option>
+        <option value="closed">Closed Environment (Manual Input)</option>
+    </select>
+
+    <div id="weatherInputs">
+        <input type="text" id="city" placeholder="Enter city name">
+        <button onclick="fetchWeather()">Fetch Weather</button>
+    </div>
+
+    <div id="manualInputs" style="display:none;">
+        <input type="number" id="temperature" placeholder="Temperature (°C)">
+        <input type="number" id="humidity" placeholder="Humidity (%)">
+        <input type="number" id="rainfall" placeholder="Rainfall (mm)">
+    </div>
+
+    <input type="text" id="npk" placeholder="Enter NPK Ratio (e.g., 20-20-20)">
+    <input type="number" id="soilMoisture" placeholder="Soil Moisture (%)">
+    
+    <button onclick="getRecommendation()">Get Recommendation</button>
+
+    <div class="result" id="output"></div>
+</div>
+
+<script>
+document.getElementById("envType").addEventListener("change", function() {
+    let env = this.value;
+    document.getElementById("weatherInputs").style.display = env === "open" ? "block" : "none";
+    document.getElementById("manualInputs").style.display = env === "closed" ? "block" : "none";
+});
+
+function fetchWeather() {
+    let city = document.getElementById("city").value;
+    fetch("/get_weather", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ city: city })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            document.getElementById("temperature").value = data.temperature;
+            document.getElementById("humidity").value = data.humidity;
+            document.getElementById("rainfall").value = data.rainfall;
+        }
+    });
+}
+
+function getRecommendation() {
+    let temperature = document.getElementById("temperature").value;
+    let humidity = document.getElementById("humidity").value;
+    let rainfall = document.getElementById("rainfall").value;
+    let npk = document.getElementById("npk").value;
+    let soilMoisture = document.getElementById("soilMoisture").value;
+
+    fetch("/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ temperature, humidity, rainfall, npk_values: npk, soil_moisture: soilMoisture })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("output").innerHTML = "<strong>Recommendation:</strong><br>" + data.recommendation;
+    });
+}
+</script>
+
+</body>
+</html>

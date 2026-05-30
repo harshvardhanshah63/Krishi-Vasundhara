@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>धारित्री - Agriculture Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
+        .chat-container { width: 50%; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px gray; }
+        .chat-box { max-height: 300px; overflow-y: auto; text-align: left; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background: #fff; }
+        .user-message { color: blue; font-weight: bold; }
+        .bot-message { color: green; font-weight: bold; }
+        input, button { padding: 10px; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <h1>🌱 धारित्री - Agriculture Chatbot</h1>
+    
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox"></div>
+        <input type="text" id="userInput" placeholder="Ask something..." />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="clearChat()">Clear Chat</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            let userInput = document.getElementById("userInput").value;
+            if (!userInput) return;
+
+            let chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML += `<p class="user-message">👤 You: ${userInput}</p>`;
+
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: userInput })
+            });
+
+            let data = await response.json();
+            chatBox.innerHTML += `<p class="bot-message">🤖 धारित्री: ${data.response}</p>`;
+            document.getElementById("userInput").value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function clearChat() {
+            await fetch("/clear", { method: "POST" });
+            document.getElementById("chatBox").innerHTML = "";
+        }
+    </script>
+
+</body>
+</html>

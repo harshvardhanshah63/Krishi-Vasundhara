@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KRISHI: SMART AGRICULTURE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    header {
+      background-color: #00796b;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.5rem;
+    }
+    .container {
+      padding: 1rem;
+    }
+    .card {
+      background: white;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .card h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #00796b;
+    }
+    .card p {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+      color: #555;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #00796b;
+      color: white;
+      font-size: 0.9rem;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>KRISHI: SMART AGRICULTURE</header>
+  <div class="container">
+    <div class="card">
+      <h2>Soil Moisture</h2>
+      <p><strong id="moisture">--%</strong></p> <!-- ✅ Added ID -->
+    </div>
+    <div class="card">
+      <h2>Temperature</h2>
+      <p><strong id="temperature">--°C</strong></p> <!-- ✅ Added ID -->
+    </div>
+    <div class="card">
+      <h2>Humidity</h2>
+      <p><strong id="humidity">--%</strong></p> <!-- ✅ Added ID -->
+    </div>
+    <div class="card">
+      <h2>Soil pH</h2>
+      <p><strong id="ph">--</strong></p> <!-- ✅ Added ID -->
+    </div>
+  </div>
+  <footer>Powered by KRISHI</footer>
+
+  <script>
+    async function fetchData() {
+      try {
+        const response = await fetch('http://your-server-ip/get-data'); // Replace with ESP32 server IP
+        const data = await response.json();
+        
+        document.getElementById("moisture").innerText = data.moisture + "%";
+        document.getElementById("temperature").innerText = data.temperature + "°C";
+        document.getElementById("humidity").innerText = data.humidity + "%";
+        document.getElementById("ph").innerText = data.ph;
+        
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+  
+    setInterval(fetchData, 5000); // Fetch data every 5 seconds
+  </script>
+</body>
+</html>
